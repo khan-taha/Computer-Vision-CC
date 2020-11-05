@@ -14,44 +14,46 @@ ap.add_argument("-c", "--confidence", type=float, default=0.5, help="minimum pro
 
 args = vars(ap.parse_args())
 
+print("ap : " + ap)
+print("ap.parse_args() : " + ap.parse_args())
+print("args : " + args)
+
 # load our serialized model from disk
 # model = res10_300x300_ssd_iter_140000_fp16.caffemodel
 # https://raw.githubusercontent.com/opencv/opencv_3rdparty/dnn_samples_face_detector_20180205_fp16/res10_300x300_ssd_iter_140000_fp16.caffemodel
 
 print("[INFO] loading model...")
+
 net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 
-# load the input image and construct an input blob for the image
-# by resizing to a fixed 300x300 pixels and then normalizing it
+# load the input image and construct an input blob for the image by resizing to a fixed 300x300 pixels and then normalizing it
+
 image = cv2.imread(args["image"])
-
+print("image.shape : " + image.shape)
 (h, w) = image.shape[:2]
-
+print("(h, w) : " + (h, w))
 blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
 
-# pass the blob through the network and obtain the detections and
-# predictions
+# pass the blob through the network and obtain the detections and predictions
+
 print("[INFO] computing object detections...")
 
 net.setInput(blob)
 
 detections = net.forward()
-
+print("detections : " + detections)
 # loop over the detections
 for i in range(0, detections.shape[2]):
- # extract the confidence (i.e., probability) associated with the
-#	# prediction
+    # extract the confidence (i.e., probability) associated with the prediction
 	confidence = detections[0, 0, i, 2]
-	# filter out weak detections by ensuring the `confidence` is
-	# greater than the minimum confidence
+	# filter out weak detections by ensuring the `confidence` is greater than the minimum confidence
 	if confidence > args["confidence"]:
-		# compute the (x, y)-coordinates of the bounding box for the
-#		# object
+        # compute the (x, y)-coordinates of the bounding box for the object
 		box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+        print("box : " + box)
         (startX, startY, endX, endY) = box.astype("int")
- 
-		# draw the bounding box of the face along with the associated
-		# probability
+        print("(startX, startY, endX, endY) : " + (startX, startY, endX, endY))
+		# draw the bounding box of the face along with the associated probability
 		text = "{:.2f}%".format(confidence * 100)
 		y = startY - 10 if startY - 10 > 10 else startY + 10
 		cv2.rectangle(image, (startX, startY), (endX, endY),
