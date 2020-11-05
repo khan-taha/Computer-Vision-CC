@@ -41,15 +41,28 @@ print("[INFO] computing object detections...")
 net.setInput(blob)
 
 detections = net.forward()
-print("detections : ", detections)
+print("detections.shape : ", detections.shape)
+print("detections : ", detections[0])
 
 # loop over the detections
+# detections.shape = (
+# ,
+# ,
+# no. of detections, 
+# detection[2] = confidence
+# detection[3] = left
+# detection[4] = top
+# detection[5] = right
+# detection[6] = bottom
+#)
 
 for i in range(0, detections.shape[2]):
+    print("i : ", i)
     # extract the confidence (i.e., probability) associated with the prediction
     confidence = detections[0, 0, i, 2]
 	# filter out weak detections by ensuring the `confidence` is greater than the minimum confidence
     if confidence > args["confidence"]:
+        print("isadasdas : ", i)
         box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
         print("box : " , box)
         (startX, startY, endX, endY) = box.astype("int")
@@ -57,6 +70,15 @@ for i in range(0, detections.shape[2]):
         # draw the bounding box of the face along with the associated probability
         text = "{:.2f}%".format(confidence * 100)
         y = startY - 10 if startY - 10 > 10 else startY + 10
+        
+        #left = detection[3] * cols
+        #top = detection[4] * rows
+        #right = detection[5] * cols
+        #bottom = detection[6] * rows
+
+        #draw a red rectangle around detected objects
+        #cv2.rectangle(img, (int(left), int(top)), (int(right), int(bottom)), (0, 0, 255), thickness=2)
+        
         cv2.rectangle(image, (startX, startY), (endX, endY),(0, 0, 255), 2)
         cv2.putText(image, text, (startX, y),
         cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
