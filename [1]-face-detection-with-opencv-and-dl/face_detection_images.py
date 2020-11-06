@@ -19,7 +19,7 @@ args = vars(ap.parse_args())
 #print("args : ", args)
 
 # load our serialized model from disk
-# model = res10_300x300_ssd_iter_140000_fp16.caffemodel
+# model => res10_300x300_ssd_iter_140000_fp16.caffemodel
 # https://raw.githubusercontent.com/opencv/opencv_3rdparty/dnn_samples_face_detector_20180205_fp16/res10_300x300_ssd_iter_140000_fp16.caffemodel
 
 print("[INFO] loading model...")
@@ -33,6 +33,8 @@ image = cv2.imread(args["image"])
 (h, w) = image.shape[:2]
 #print("(h, w) : " , (h, w))
 blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
+
+cv2.imshow("Image", image)
 
 # pass the blob through the network and obtain the detections and predictions
 
@@ -62,7 +64,7 @@ detections = net.forward()
 #print(detections[0, 0, 2])
 
 for i in range(0, detections.shape[2]):
-    print("i : ", i)
+    # print("i : ", i)
     # extract the confidence (i.e., probability) associated with the prediction
     confidence = detections[0, 0, i, 2]
 	# filter out weak detections by ensuring the `confidence` is greater than the minimum confidence
@@ -88,6 +90,6 @@ for i in range(0, detections.shape[2]):
         cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
         
 # show the output image
-cv2.imshow("Output", image)
+cv2.imshow("Face Detection", image)
 cv2.waitKey(0)
  
